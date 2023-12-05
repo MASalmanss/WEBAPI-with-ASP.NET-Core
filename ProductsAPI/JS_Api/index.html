@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="getProducts()">Get Products</button>
+    <button onclick="getProductsid()">Get Products ID</button>
+    <button onclick="Login()">Login</button>
+
+    <div id="divProducts">
+        
+    </div>
+
+    <script>
+
+        const Login = async () =>{
+
+            const response = await fetch("http://localhost:5126/api/users/login",
+            {
+                headers : {
+                    "Accept"  : "application/json",
+                    "Content-Type" : "application/json",
+                },
+                method : "POST",
+                body : JSON.stringify({email :  "info@sadikturan.com" , password : "135790"})
+
+            });
+            const result = await response.json();
+            console.log(result)
+            localStorage.setItem("token" , JSON.stringify(result.token))
+        }
+
+
+        const getProducts = async () =>
+        {
+           const response =  await fetch("http://localhost:5126/api/Products")
+           const products = await response.json();
+           console.log(products)
+           displayProducts(products)
+        }
+
+
+        const getProductsid = async () =>
+        {
+            const token = JSON.parse(localStorage.getItem("token"))
+           const response =  await fetch("http://localhost:5126/api/Products/4" , {
+            headers : {Authorization : `Bearer ${token}`}
+            
+            })
+           console.log(response)
+           const product = await response.json()
+           console.log(product)
+           displayProducts(product)
+        }
+
+        const  displayProducts = (products) =>{
+           const parent = document.getElementById("divProducts")
+           
+           products.forEach(prd => {
+                parent.innerHTML += `
+                <div>
+                    <h5>${prd.productName}</h5>
+                    <p>${prd.price}</p>
+                </div>
+                `
+            })
+        }
+    </script>
+</body>
+</html>
